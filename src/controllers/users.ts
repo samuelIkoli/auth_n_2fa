@@ -26,14 +26,12 @@ const userSchema = Joi.object({
     }),
   email: Joi.string().email().required(),
   phone: Joi.string()
-    .pattern(/^\d{10}$/)
-    .required(), // Validates that the phone is a 10-digit number
+    .pattern(/^\d{11}$/)
+    .required(), // Validates that the phone is a 11-digit number
 });
 
 const loginSchema = Joi.object({
-  phone: Joi.string()
-    .pattern(/^\d{10}$/)
-    .required(), // Validates that the phone is a 10-digit number
+  email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
 
@@ -51,7 +49,13 @@ export const ping = (req: Request, res: Response) => {
 
 export const getUsers: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const users = await knex("users");
+    const users = await knex("users").select(
+      "id",
+      "username",
+      "email",
+      "phone",
+      "two_fa"
+    );
     return res.status(200).json(getResponse(users));
   } catch (error) {
     return res.status(500).json({ message: "Error" });
@@ -102,25 +106,21 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  const { phone, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     // Find the user in the database
-    const user = await knex("users").where({ phone }).first();
+    const user = await knex("users").where({ email }).first();
 
     if (!user) {
-      return res
-        .status(400)
-        .json({ message: "Invalid phone number or password" });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     // Compare the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res
-        .status(400)
-        .json({ message: "Invalid phone number or password" });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign(
