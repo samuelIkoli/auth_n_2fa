@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { readdirSync } from "fs";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, world! I am a simple auth app");
@@ -23,9 +25,10 @@ readdirSync("./src/routes").map((path) =>
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err.type === "entity.parse.failed") {
+    console.log(err);
     return res.status(400).json({
       status: "error",
-      message: "Bad request",
+      message: "Bad request from here oh",
     });
   }
   next(err);
