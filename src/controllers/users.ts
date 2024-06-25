@@ -205,7 +205,9 @@ export const authenticate_otp: RequestHandler = async (req: any, res) => {
       return res.status(400).json({ message: "Invalid 2FA token" });
     }
 
-    const two_fa = await knex("users").update({ two_fa: 1 });
+    const two_fa = await knex("users")
+      .where({ id: user_id })
+      .update({ two_fa: 1 });
 
     if (!two_fa) {
       return res
