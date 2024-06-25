@@ -159,7 +159,7 @@ export const setup_2fa = async (req: any, res: Response) => {
     const user = await knex("users").where({ id: user_id }).first();
     // console.log(user);
     let data_url;
-    if (!user.otp_secret || !user.auth_url || user.two_fa == 0) {
+    if (!user.otp_secret || !user.auth_url || !user.two_fa) {
       // Generate a secret key for 2FA
       const secret: any = speakeasy.generateSecret({ length: 20 });
       data_url = await qrcode.toDataURL(secret.otpauth_url);
