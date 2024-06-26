@@ -149,17 +149,22 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
 };
 
 export const setup_2fa = async (req: any, res: Response) => {
-  const user_id: number = req.query.user_id;
-  //   console.log(req.query);
-  if (!user_id) {
-    console.log("There is no userID");
-    return res.send("There is no userID");
+  const user_id: string = req.query.user_id;
+  const id = parseInt(user_id);
+  if (!user_id || Number.isNaN(id)) {
+    return res.status(400).json({
+      message: "There is no userID or userID can not be parsed to a number",
+    });
+  }
+  if (id <= 0) {
+    return res
+      .status(400)
+      .json({ message: "User ID should be a positive integer" });
   }
   try {
-    const user = await knex("users").where({ id: user_id }).first();
-    // console.log(user);
+    const user = await knex("users").where({ id }).first();
     let data_url;
-    if (!user.otp_secret || !user.auth_url || !user.two_fa) {
+    if (!user?.otp_secret || !user?.auth_url || !user?.two_fa) {
       // Generate a secret key for 2FA
       const secret: any = speakeasy.generateSecret({ length: 20 });
       data_url = await qrcode.toDataURL(secret.otpauth_url);
