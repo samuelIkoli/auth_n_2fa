@@ -10,30 +10,10 @@ import jwt from "jsonwebtoken";
 import Joi from "joi";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
+import { userSchema, loginSchema } from "../interfaces/users";
 
 // const {} = process.env;
 const JWT_SECRET = "Lendianite";
-
-const userSchema = Joi.object({
-  username: Joi.string().min(3).max(30).required(),
-  password: Joi.string()
-    .min(6)
-    .pattern(/(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/)
-    .required()
-    .messages({
-      "string.pattern.base":
-        "Password must contain at least one uppercase letter, one number, and one special character",
-    }),
-  email: Joi.string().email().required(),
-  phone: Joi.string()
-    .pattern(/^\d{11}$/)
-    .required(), // Validates that the phone is a 11-digit number
-});
-
-const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
-});
 
 const getResponse = (data: object) => {
   return {
@@ -189,8 +169,13 @@ export const setup_2fa = async (req: any, res: Response) => {
 };
 
 export const authenticate_otp: RequestHandler = async (req: any, res) => {
+  const { error } = loginSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
   const { otp, user_id } = req.body;
-  console.log(otp);
 
   try {
     // Get the user's 2FA secret from the database
@@ -225,14 +210,4 @@ export const authenticate_otp: RequestHandler = async (req: any, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error verifying 2FA", error });
   }
-};
-
-export const showReq: RequestHandler = async (req, res) => {
-  //   const authHeader = req.headers["authorization"];
-  //   console.log(req.cookies);
-  //   const token = authHeader && authHeader.split(" ")[1];
-  //   console.log(token);
-  console.log(JSON.stringify(req.signedCookies));
-  console.log(JSON.stringify(req.cookies));
-  return res.status(200).json({ message: "success", data: null });
 };
