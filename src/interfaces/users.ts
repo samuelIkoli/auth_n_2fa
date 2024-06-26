@@ -22,6 +22,6 @@ export const loginSchema = Joi.object({
 });
 
 export const otpSchema = Joi.object({
-  otp: Joi.number().min(6).max(6).required(),
+  otp: Joi.number().required(),
   user_id: Joi.number().required(),
 });

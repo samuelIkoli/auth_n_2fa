@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 import Joi from "joi";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
-import { userSchema, loginSchema } from "../interfaces/users";
+import { userSchema, loginSchema, otpSchema } from "../interfaces/users";
 
 // const {} = process.env;
 const JWT_SECRET = "Lendianite";
@@ -169,7 +169,7 @@ export const setup_2fa = async (req: any, res: Response) => {
 };
 
 export const authenticate_otp: RequestHandler = async (req: any, res) => {
-  const { error } = loginSchema.validate(req.body);
+  const { error } = otpSchema.validate(req.body);
 
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
