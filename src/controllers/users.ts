@@ -164,7 +164,7 @@ export const setup_2fa = async (req: any, res: Response) => {
   try {
     const user = await knex("users").where({ id }).first();
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User with that ID not found" });
     }
     let data_url;
     if (!user.otp_secret || !user.auth_url || !user.two_fa) {
@@ -182,7 +182,6 @@ export const setup_2fa = async (req: any, res: Response) => {
     }
 
     return res.status(200).json(getResponse({ data_url }));
-    // return res.end('<img src="' + data_url + '">');
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error setting up 2FA", error });
@@ -192,7 +191,6 @@ export const setup_2fa = async (req: any, res: Response) => {
 export const authenticate_otp: RequestHandler = async (req: any, res) => {
   const { otp, user_id } = req.body;
   console.log(otp);
-  //   const userId = req.body.user_id || 2;
 
   try {
     // Get the user's 2FA secret from the database
