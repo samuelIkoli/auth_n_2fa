@@ -7,18 +7,14 @@ import {
   getUsers,
   setup_2fa,
   authenticate_otp,
-  showReq,
 } from "../controllers/users";
 import { authenticateToken } from "../utils/middlewares";
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/two-fa", setup_2fa);
 router.get("/two-fa", setup_2fa);
-router.get("/ping", ping);
 router.get("/users", getUsers);
 router.post("/verify", authenticate_otp);
-router.get("/sesh", showReq);
 router.get("/protected", authenticateToken, (req: any, res: any) => {
   res.status(200).json({
     message:
