@@ -16,6 +16,7 @@ import {
   otpSchema,
   id_schema,
 } from "../interfaces/users";
+import { encrypt, decrypt } from "../utils/helpers";
 
 // const {} = process.env;
 const JWT_SECRET = "Lendianite";
@@ -153,12 +154,12 @@ export const setup_2fa = async (req: any, res: Response) => {
       data_url = await qrcode.toDataURL(secret.otpauth_url);
       const update = await knex("users")
         .where({ id })
-        .update({ otp_secret: secret.base32 });
+        .update({ otp_secret: encrypt(secret.base32) });
       const update2 = await knex("users")
         .where({ id })
-        .update({ auth_url: secret.otpauth_url });
+        .update({ auth_url: encrypt(secret.otpauth_url) });
     } else {
-      data_url = await qrcode.toDataURL(user.auth_url);
+      data_url = await qrcode.toDataURL(decrypt(user.auth_url));
     }
 
     return res.status(200).json(getResponse({ data_url }));
@@ -187,7 +188,7 @@ export const authenticate_otp: RequestHandler = async (req: any, res) => {
 
     // Verify the token
     const isVerified = speakeasy.totp.verify({
-      secret: user.otp_secret,
+      secret: decrypt(user.otp_secret),
       encoding: "base32",
       token: otp,
     });
