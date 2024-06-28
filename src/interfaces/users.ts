@@ -25,3 +25,7 @@ export const otpSchema = Joi.object({
   otp: Joi.number().required(),
   user_id: Joi.number().required(),
 });
+
+export const id_schema = Joi.object({
+  user_id: Joi.number().required().positive(),
+});

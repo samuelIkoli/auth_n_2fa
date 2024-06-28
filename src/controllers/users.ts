@@ -10,7 +10,12 @@ import jwt from "jsonwebtoken";
 import Joi from "joi";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
-import { userSchema, loginSchema, otpSchema } from "../interfaces/users";
+import {
+  userSchema,
+  loginSchema,
+  otpSchema,
+  id_schema,
+} from "../interfaces/users";
 
 // const {} = process.env;
 const JWT_SECRET = "Lendianite";
@@ -129,18 +134,13 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
 };
 
 export const setup_2fa = async (req: any, res: Response) => {
-  const user_id: string = req.query.user_id;
-  const id = parseInt(user_id);
-  if (!user_id || Number.isNaN(id)) {
-    return res.status(400).json({
-      message: "There is no userID or userID can not be parsed to a number",
-    });
+  const { error } = id_schema.validate(req.query);
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
   }
-  if (id <= 0) {
-    return res
-      .status(400)
-      .json({ message: "User ID should be a positive integer" });
-  }
+  const id = parseInt(req.query.user_id);
+
   try {
     const user = await knex("users").where({ id }).first();
     if (!user) {
@@ -152,10 +152,10 @@ export const setup_2fa = async (req: any, res: Response) => {
       const secret: any = speakeasy.generateSecret({ length: 20 });
       data_url = await qrcode.toDataURL(secret.otpauth_url);
       const update = await knex("users")
-        .where({ id: user_id })
+        .where({ id })
         .update({ otp_secret: secret.base32 });
       const update2 = await knex("users")
-        .where({ id: user_id })
+        .where({ id })
         .update({ auth_url: secret.otpauth_url });
     } else {
       data_url = await qrcode.toDataURL(user.auth_url);
