@@ -5,11 +5,12 @@ import {
   scryptSync,
 } from "crypto";
 
-const algorithm = "aes-256-cbc";
-const secretKey = scryptSync("your_secret_key", "salt", 32); // Replace with your actual secret key
+const algorithm = `${process.env.CRYPTO_ALGORITHM}`;
+const secretKey = scryptSync(`${process.env.CRYPTO_SECRET}`, "salt", 32); // Replace with your actual secret key
 const ivLength = 16;
 
 export function encrypt(text: string): string {
+  console.log("it is", process.env);
   const iv = randomBytes(ivLength);
   const cipher = createCipheriv(algorithm, secretKey, iv);
   const encrypted = Buffer.concat([

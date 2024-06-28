@@ -1,5 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
 const { DB_HOST, DB_PASSWORD, DB_NAME, DB_USERNAME, DB_PORT } = process.env;
-
 export const knex = require("knex")({
   client: "mysql",
   connection: {
