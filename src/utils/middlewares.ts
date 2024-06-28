@@ -10,9 +10,7 @@ export const authenticateToken: RequestHandler = (
   next: NextFunction
 ) => {
   const authHeader = req.headers["authorization"];
-  console.log(authHeader);
   const token = req.params.token || (authHeader && authHeader.split(" ")[1]);
-  console.log(token);
   if (!token) {
     return res.status(401).json({ message: "Access denied" });
   }
