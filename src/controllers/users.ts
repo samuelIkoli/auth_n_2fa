@@ -118,7 +118,6 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     // Set the token in an HTTP-only cookie
     res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
     res.setHeader("Authorization", `Bearer ${token}`);
-    console.log(JSON.stringify(req.signedCookies));
     return res.status(200).json(
       getResponse({
         id: user.id,
@@ -152,7 +151,6 @@ export const setup_2fa = async (req: any, res: Response) => {
       // Generate a secret key for 2FA
       const secret: any = speakeasy.generateSecret({ length: 20 });
       data_url = await qrcode.toDataURL(secret.otpauth_url);
-      console.log("here", encrypt(secret.base32));
       const update = await knex("users")
         .where({ id })
         .update({ otp_secret: encrypt(secret.base32) });

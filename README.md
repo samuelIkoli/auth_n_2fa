@@ -55,5 +55,6 @@ Documentation can be found [here](https://www.postman.com/crimson-capsule-415986
 ## 🔗 Link(s)
 
 - [You can interact with the frontend of this project here](reactauth-iota.vercel.app)
+- [Video of basic working functionality](https://jam.dev/c/7e506697-2aaf-4c13-8e11-b50fdb1bddfd)
 
 Built by SAMUEL IKOLI

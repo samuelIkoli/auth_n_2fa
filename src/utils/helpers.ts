@@ -10,7 +10,6 @@ const secretKey = scryptSync(`${process.env.CRYPTO_SECRET}`, "salt", 32); // Rep
 const ivLength = 16;
 
 export function encrypt(text: string): string {
-  console.log("it is", process.env);
   const iv = randomBytes(ivLength);
   const cipher = createCipheriv(algorithm, secretKey, iv);
   const encrypted = Buffer.concat([
