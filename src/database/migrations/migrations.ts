@@ -10,7 +10,6 @@ export async function up(knex: any): Promise<void> {
     table.boolean("two_fa").defaultTo(false);
     table.string("otp_secret");
     table.string("auth_url");
-    // Add any other columns as needed
   });
 }
 
